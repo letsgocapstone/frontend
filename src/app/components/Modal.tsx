@@ -2,16 +2,21 @@
 
 import { useEffect, useRef, useState } from "react";
 import { FaCamera, FaUpload, FaTimes } from "react-icons/fa";
+import RatingStars from "@/app/components/RatingStars";
+import Image from 'next/image'
+
 
 interface ModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: (placeTitle: string, placeDescription: string, imageFile: File) => void;
+    onSubmit: (placeTitle: string, longitude:number, latitude:number, placeDescription: string, rating:number,imageFile: File) => void;
 }
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
     const [placeTitle, setPlaceTitle] = useState("");
     const [placeDescription, setPlaceDescription] = useState("");
+    const [longitude, setLongitude] = useState(0);
+    const [latitude, setLatitude] = useState(0);
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [isMobile, setIsMobile] = useState<boolean>(false);
@@ -20,14 +25,44 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [stream, setStream] = useState<MediaStream | null>(null);
+    const [tagInput, setTagInput] = useState('');
+    const [selectedTags, setSelectedTags] = useState<string[]>([]);
+    const [allTags, setAllTags] = useState(['']);
+    const [rating, setRating] = useState(0);
+    // const [allTags, setAllTags] = useState(['']);
+    // setAllTags(['카페', '주차장', '야경', '뷰맛집']);
+    const filteredTags = allTags.filter(tag =>
+        tag.includes(tagInput) && !selectedTags.includes(tag)
+    );
+
+    const addTag = (tag: string) => {
+        if (!selectedTags.includes(tag)) {
+            setSelectedTags([...selectedTags, tag]);
+            setTagInput('');
+        }
+    };
+
+    const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter' && tagInput.trim()) {
+            addTag(tagInput.trim());
+            e.preventDefault();
+        }
+    };
+
+    const removeTag = (tag: string) => {
+        setSelectedTags(selectedTags.filter((t) => t !== tag));
+    };
 
     useEffect(() => {
+        setAllTags(['카페', '주차장', '야경', '뷰맛집']);
         setIsMobile(/Mobi|Android/i.test(navigator.userAgent));
+
 
         // 위치 정보 가져오기 (한 번만 실행)
         navigator.geolocation.getCurrentPosition(
             (pos) => {
-                setPlaceDescription(`위도 ${pos.coords.latitude}, 경도 ${pos.coords.longitude}`);
+                setLatitude(pos.coords.latitude);
+                setLongitude(pos.coords.longitude);
             },
             () => {
                 setPlaceDescription("위치 정보를 가져올 수 없습니다.");
@@ -80,7 +115,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (placeTitle && placeDescription && imageFile) {
-            onSubmit(placeTitle, placeDescription, imageFile);
+            onSubmit(placeTitle, longitude, latitude, placeDescription, rating, imageFile);
 
             // 폼 제출 후 상태 초기화 (placeDescription 유지)
             setPlaceTitle('');
@@ -103,9 +138,9 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-4">
-            <div className="bg-white p-6 rounded-lg w-full max-w-lg shadow-xl">
-                <h2 className="text-xl font-semibold mb-4">📍 장소 등록</h2>
+        <div className="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl p-6 shadow-2xl max-h-[80%] overflow-y-auto">
+
+        <h2 className="text-xl font-semibold mb-4">📍 장소 등록</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {/* 장소 이름 입력 */}
                     <div>
@@ -116,9 +151,55 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
                             onChange={(e) => setPlaceTitle(e.target.value)}
                             className="w-full border px-3 py-2 rounded"
                             placeholder="장소 제목 입력"
-                            required
                         />
                     </div>
+                    <div>
+                        <label className="block font-medium mb-1">태그 등록</label>
+
+                        {/* 입력창 */}
+                        <input
+                            type="text"
+                            value={tagInput}
+                            onChange={(e) => setTagInput(e.target.value)}
+                            onKeyDown={handleTagKeyDown}
+                            placeholder="태그 입력 후 Enter"
+                            className="w-full border px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        />
+
+                        {/* 자동완성 드롭다운 */}
+                        {tagInput && filteredTags.length > 0 && (
+                            <ul className="absolute left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-md z-10 max-h-40 overflow-y-auto">
+                                {filteredTags.map((tag) => (
+                                    <li
+                                        key={tag}
+                                        onClick={() => addTag(tag)}
+                                        className="px-3 py-2 hover:bg-blue-50 cursor-pointer"
+                                    >
+                                        {tag}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+
+
+                        {/* 선택된 태그들 */}
+                        <div className="flex flex-wrap gap-2 mt-3">
+                            {selectedTags.map((tag) => (
+                                <span
+                                    key={tag}
+                                    className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm flex items-center gap-2"
+                                >
+        {tag}
+                                    <button onClick={() => removeTag(tag)} className="text-blue-500 hover:text-red-500">
+          ×
+        </button>
+      </span>
+                            ))}
+                        </div>
+                    </div>
+                    <label className="block font-medium mb-1">평점</label>
+                    <RatingStars rating={rating} onChange={setRating} />
+
 
                     {/* 장소 설명 입력 */}
                     <div>
@@ -189,9 +270,11 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
                         {/* 이미지 미리보기 */}
                         {previewUrl && (
                             <div className="mt-3">
-                                <img
+                                <Image
                                     src={previewUrl}
                                     alt="미리보기"
+                                    width={100}
+                                    height={100}
                                     className="w-full max-h-60 object-cover rounded border"
                                 />
                                 <p className="text-sm text-gray-600 mt-1">{imageFile?.name}</p>
@@ -217,7 +300,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
                     </div>
                 </form>
             </div>
-        </div>
+
     );
 };
 

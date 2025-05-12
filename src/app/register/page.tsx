@@ -9,6 +9,7 @@ export default function RegisterPage() {
     const router = useRouter();
 
     const [username, setUsername] = useState('');
+    const [emailDomain, setEmailDomain] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
@@ -21,13 +22,15 @@ export default function RegisterPage() {
         //     setErrorMsg('비밀번호가 일치하지 않습니다.');
         //     return;
         // }
+        const fullEmail = username && emailDomain ? `${username}@${emailDomain}` : '';
+        // console.log(fullEmail);
 
         const res = await fetch(`/api/join`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ username, password }),
+            body: JSON.stringify({ username: fullEmail, password }),
             credentials: 'include',
         });
 
@@ -74,7 +77,7 @@ export default function RegisterPage() {
                     className="sm:w-1/2 w-full px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0E3C56]"
                   />
                   <span className="self-center hidden sm:block">@</span>
-                  <select className="sm:w-1/2 w-full px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0E3C56]">
+                  <select value={emailDomain} onChange={(e) => setEmailDomain(e.target.value)} className="sm:w-1/2 w-full px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0E3C56]">
                     <option>선택</option>
                     <option>gmail.com</option>
                     <option>naver.com</option>

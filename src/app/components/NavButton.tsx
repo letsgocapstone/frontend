@@ -6,11 +6,13 @@ interface NavButtonProps {
     height: number;
     text: string;
 }
-export default function NavButton({ src, alt, width, height, text }: NavButtonProps) {
+export default function NavButton({ src, alt, text }: Omit<NavButtonProps, 'width' | 'height'>) {
     return (
         <div className="flex flex-col items-center justify-center">
-            <Image src={src} alt={alt} width={width} height={height} />
-            <div>{text}</div>
+            <div className="w-5 h-5 relative"> {/* 32px x 32px */}
+                <Image src={src} alt={alt} fill className="object-contain" />
+            </div>
+            <div className="text-sm">{text}</div>
         </div>
     );
 }
