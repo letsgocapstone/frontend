@@ -1,14 +1,20 @@
 // InfoBox.tsx
+// 'use client'
+
 import React from 'react';
 import Image from 'next/image'
+import {useRouter} from "next/navigation";
 
 export interface Poi {
     title: string;
     description?: string;
     imageUrl?: string;
+    placeId: number;
 }
 
-const InfoBox = ({ poi }: { poi: Poi }) => {
+const InfoBox = ({ poi, onMoreClick }: { poi: Poi,onMoreClick: () => void }) => {
+    // const router = useRouter();
+
     const description = poi.description || 'example';
     const imageUrl = poi.imageUrl || '/images.png'; // Next.js 기본 이미지 경로
 
@@ -23,6 +29,12 @@ const InfoBox = ({ poi }: { poi: Poi }) => {
                 // style={{ width: '100%', borderRadius: '4px', marginBottom: '8px' }}
             />
             <p style={{ margin: 0, fontSize: '14px', color: '#555' }}>{description}</p>
+            <button onClick={onMoreClick}><p>더보기</p></button>
+            {/*<button onClick={()=>{*/}
+            {/*    router.push(`/place?pid=${poi.placeId}`);*/}
+
+            {/*}}><p>더보기</p></button>*/}
+
         </div>
     );
 };

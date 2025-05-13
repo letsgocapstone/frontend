@@ -9,6 +9,10 @@ import {
     Pin, useMap
 } from '@vis.gl/react-google-maps';
 import type {Marker} from '@googlemaps/markerclusterer';
+import { useRouter } from 'next/navigation';
+
+// Map 컴포넌트 내부
+
 
 
 interface resDto {
@@ -21,17 +25,20 @@ interface resPoi {
     placeTitle: string;
     placeImageURL: string;
     userid: number;
+    placeId: number;
 }
 
 interface Poi {
     key: string;
     location: google.maps.LatLngLiteral;
     title: string;
+    placeId: number;
 }
 interface PlaceDto {
     latitude: number;
     longitude: number;
     placeTitle: string;
+    placeId: number;
     // other fields...
 };
 
@@ -71,13 +78,12 @@ export async function loadPlace(lat: number, lng: number) {
 
 
 export default function CustomeMap() {
-
-
-
+    const router = useRouter();
     const [userCenter, setUserCenter] = useState<{ lat: number, lng: number } | null>(null);
     const [lastPosition, setLastPosition] = useState<{ lat: number, lng: number } | null>(null);
     const [textContent, setTextContent] = useState('위치 파악 중…');
     const [point, setPoint] = useState<Poi[] | null>(null);
+
 
     useEffect(() => {
         if (!navigator.geolocation) {
@@ -101,6 +107,7 @@ export default function CustomeMap() {
                                 key: Math.random().toString(36).substring(2, 10),
                                 location: { lat: p.latitude, lng: p.longitude },
                                 title: p.placeTitle,
+                                placeId: p.placeId,
                             }));
                             console.log(placepoi);
                             setPoint(placepoi);
@@ -159,6 +166,10 @@ export default function CustomeMap() {
                 }
             });
         };
+        const handleMoreClick = (placeId: number) => {
+            router.push(`/place/${placeId}`);
+        };
+
 
         return (
             <>
@@ -178,7 +189,7 @@ export default function CustomeMap() {
                             console.log(poi)
                             if (map && infoWindowRef.current) {
                                 const container = document.createElement('div');
-                                createRoot(container).render(<InfoBox poi={poi} />);
+                                createRoot(container).render(<InfoBox poi={poi}  onMoreClick={() => handleMoreClick(poi.placeId)} />);
                                 infoWindowRef.current.setContent(container);
                                 infoWindowRef.current.setPosition(poi.location);
                                 infoWindowRef.current.open(map);
@@ -208,7 +219,8 @@ export default function CustomeMap() {
                     const placepoi:Poi[] = places.poi.map((p:PlaceDto)=> ({
                         key:Math.random().toString(36).substring(2, 10),
                         location:{lat: p.latitude, lng: p.longitude},
-                        title:p.placeTitle
+                        title:p.placeTitle,
+                        placeId:p.placeId,
                     }));
                     console.log(placepoi);
                     setPoint(placepoi);
