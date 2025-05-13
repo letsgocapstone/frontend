@@ -175,6 +175,7 @@ export default function CustomeMap() {
                         // gmpClickable={true}
                         ref={marker => setMarkerRef(marker, poi.key)}
                         onClick={() => {
+                            console.log(poi)
                             if (map && infoWindowRef.current) {
                                 const container = document.createElement('div');
                                 createRoot(container).render(<InfoBox poi={poi} />);
