@@ -127,6 +127,7 @@ export default function CustomeMap() {
     }, []);
 
 
+
     const PoiMarkers = (props: { pois: Poi[] }) => {
         const map = useMap();
         const [markers, setMarkers] = useState<{[key: string]: Marker}>({});
@@ -169,6 +170,27 @@ export default function CustomeMap() {
         const handleMoreClick = (placeId: number) => {
             router.push(`/place/${placeId}`);
         };
+        const handleMarkerClick = (poi: Poi) => {
+            if (map && infoWindowRef.current) {
+                console.log("current: ",poi.placeId);
+                const container = document.createElement('div');
+                createRoot(container).render(<InfoBox poi={poi} onMoreClick={() => handleMoreClick(poi.placeId)} />);
+                infoWindowRef.current.setContent(container);
+                infoWindowRef.current.setPosition(poi.location);
+                infoWindowRef.current.open(map);
+
+            } else {
+                // Create new InfoWindow if it does not exist
+                console.log(poi.placeId);
+                infoWindowRef.current = new google.maps.InfoWindow();
+                const container = document.createElement('div');
+                createRoot(container).render(<InfoBox poi={poi} onMoreClick={() => handleMoreClick(poi.placeId)} />);
+                infoWindowRef.current.setContent(container);
+                infoWindowRef.current.setPosition(poi.location);
+                infoWindowRef.current.open(map);
+
+            }
+        };
 
 
         return (
@@ -185,16 +207,17 @@ export default function CustomeMap() {
                         position={poi.location}
                         // gmpClickable={true}
                         ref={marker => setMarkerRef(marker, poi.key)}
-                        onClick={() => {
-                            console.log(poi)
-                            if (map && infoWindowRef.current) {
-                                const container = document.createElement('div');
-                                createRoot(container).render(<InfoBox poi={poi}  onMoreClick={() => handleMoreClick(poi.placeId)} />);
-                                infoWindowRef.current.setContent(container);
-                                infoWindowRef.current.setPosition(poi.location);
-                                infoWindowRef.current.open(map);
-                            }
-                        }}
+                        // onClick={() => {
+                        //     console.log(poi)
+                        //     if (map && infoWindowRef.current) {
+                        //         const container = document.createElement('div');
+                        //         createRoot(container).render(<InfoBox poi={poi}  onMoreClick={() => handleMoreClick(poi.placeId)} />);
+                        //         infoWindowRef.current.setContent(container);
+                        //         infoWindowRef.current.setPosition(poi.location);
+                        //         infoWindowRef.current.open(map);
+                        //     }
+                        // }}
+                        onClick={() => handleMarkerClick(poi)}
                     >
                         {/*<Pin />*/}
                     </AdvancedMarker>
