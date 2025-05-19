@@ -12,6 +12,12 @@ export default function LoginPage() {
     const [successMsg, setSuccessMsg] = useState('');
     const [jwtToken, setJwtToken] = useState('');
 
+    const handleRegister = (e: React.MouseEvent) => {
+      e.preventDefault(); // 클릭 이벤트가 submit을 트리거하지 않게 막음
+      router.push('register'); // 회원가입 페이지로 이동
+    };
+    
+
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -47,26 +53,21 @@ export default function LoginPage() {
   
 
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center px-4">
-        <div className="w-full max-w-sm sm:max-w-md md:max-w-lg mx-auto">
-          <div className="mb-15 h-30 flex items-center justify-center bg-gray-100 rounded">
-            <span className="text-gray-600">로고 삽입</span>
+      <div className="min-h-screen bg-white flex items-start justify-center px-4"> {/* justify-center -> justify-start */}
+        <div className="w-full max-w-xs sm:max-w-sm mx-auto">
+          
+          {/* 로고 삽입 */}
+          <div className="mb-6 sm:mb-8 h-30px flex items-center justify-center mt-15"> {/* mt-4로 위쪽 여백 살짝 추가 */}
+            <img src="/logo.png" alt="로고" className="h-[25vh]" />
           </div>
     
           <form onSubmit={handleLogin}>
             <div className="space-y-6">
               {/* 이메일 입력 */}
-              <div className="flex w-full h-[55px] shadow-md">
-                <div className="w-12 h-full flex items-center justify-center rounded-l-md bg-[#2D5E7E]">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                    strokeWidth="1.5" stroke="white" className="w-5 h-5">
-                    <path strokeLinecap="round" strokeLinejoin="round"
-                      d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 
-                      2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 
-                      19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 
-                      0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 
-                      4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 
-                      2.25 0 0 1-1.07-1.916V6.75" />
+              <div className="flex w-full h-[55px] shadow-md mt-8">
+                <div className="w-12 h-full flex items-center justify-center rounded-l-md" style={{ backgroundColor: '#056CF2' }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="white" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
                   </svg>
                 </div>
     
@@ -75,7 +76,7 @@ export default function LoginPage() {
                     id="username"
                     type="email"
                     value={username}
-                    onChange={(e)=> setUsername(e.target.value)}
+                    onChange={(e) => setUsername(e.target.value)}
                     required
                     placeholder="이메일"
                     className="w-full focus:outline-none"
@@ -85,14 +86,9 @@ export default function LoginPage() {
     
               {/* 비밀번호 입력 */}
               <div className="flex w-full h-[55px] shadow-md mb-10">
-                <div className="w-12 h-full flex items-center justify-center rounded-l-md bg-[#2D5E7E]">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                    strokeWidth="1.5" stroke="white" className="w-5 h-5">
-                    <path strokeLinecap="round" strokeLinejoin="round"
-                      d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 
-                      11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 
-                      2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 
-                      2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                <div className="w-12 h-full flex items-center justify-center rounded-l-md" style={{ backgroundColor: '#056CF2' }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="white" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
                   </svg>
                 </div>
     
@@ -110,12 +106,12 @@ export default function LoginPage() {
               </div>
     
               {/* 로그인 버튼 */}
-              <button className="w-full py-2 bg-[#0E3C56] text-white rounded-md h-[60px] shadow-md">
+              <button className="w-full py-2 bg-[#056CF2] text-white rounded-md h-[50px] shadow-md cursor-pointer hover:bg-[#0583F2]">
                 로그인
               </button>
     
               {/* 회원가입 버튼 */}
-              <button  onClick={()=>router.push("register")} className="w-full py-2 border border-[#0E3C56] text-[#0E3C56] rounded-md h-[60px] shadow-md">
+              <button onClick={handleRegister} className="w-full py-2 border border-[#056CF2] text-[#056CF2] rounded-md h-[50px] shadow-md cursor-pointer hover:bg-[#F2F2F2]" >
                 회원가입
               </button>
             </div>
@@ -127,4 +123,5 @@ export default function LoginPage() {
       </div>
     );
     
+
 }

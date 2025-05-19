@@ -10,6 +10,7 @@ export default function RegisterPage() {
 
     const [username, setUsername] = useState('');
     const [emailDomain, setEmailDomain] = useState('');
+    const [customDomain, setCustomDomain] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
@@ -51,7 +52,7 @@ export default function RegisterPage() {
           {/* 상단 영역 */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <button className="text-3xl font-light text-gray-500">&times;</button>
+              <button onClick={() => router.push('/login')} className="text-3xl font-light text-gray-500 cursor-pointer">&times;</button>
               <h2 className="text-2xl font-bold text-gray-800">회원가입</h2>
               <span className="w-6" />
             </div>
@@ -79,10 +80,21 @@ export default function RegisterPage() {
                   <span className="self-center hidden sm:block">@</span>
                   <select value={emailDomain} onChange={(e) => setEmailDomain(e.target.value)} className="sm:w-1/2 w-full px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0E3C56]">
                     <option>선택</option>
+                    <option>직접 입력</option>
                     <option>gmail.com</option>
                     <option>naver.com</option>
                     <option>daum.net</option>
                   </select>
+
+                  {emailDomain === "직접 입력" && (
+                    <input
+                      type="text"
+                      value={customDomain}
+                      onChange={(e) => setCustomDomain(e.target.value)}
+                      placeholder="직접 입력"
+                      className="w-full px-3 py-2 bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0E3C56]"
+                      />
+                  )}
                 </div>
               </div>
     
@@ -122,7 +134,7 @@ export default function RegisterPage() {
               </div>
     
               
-              <button className="w-full py-2 bg-[#0E3C56] text-white rounded-md hover:bg-[#0c2f45] transition text-[15pt]">
+              <button className="w-full py-2 bg-[#056CF2] text-white rounded-md hover:bg-[#0583F2] transition text-[15pt] cursor-pointer">
                 가입하기
               </button>
             </div>

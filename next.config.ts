@@ -2,6 +2,11 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
+
+  images: {
+    domains: ['via.placeholder.com'], // 이미지를 허용할 도메인 추가
+  },
+  
   async rewrites() {
     return [
       {
