@@ -20,7 +20,7 @@ interface InfoBoxProps {
 }
 
 const InfoBox = ({ poi, onMoreClick }: InfoBoxProps) => {
-  const router = useRouter(); // 페이지 이동을 위한 useRouter 훅
+  // const router = useRouter(); // 페이지 이동을 위한 useRouter 훅
   const [address, setAddress] = useState<string>(''); // 도로명 주소 상태
   const [liked, setLiked] = useState(false); // 좋아요 상태
   const [bookmarked, setBookmarked] = useState(false); // 북마크 상태
@@ -70,9 +70,9 @@ const InfoBox = ({ poi, onMoreClick }: InfoBoxProps) => {
   };
 
   // 상세보기 페이지로 이동
-  const handleMoreClick = () => {
-    router.push(`/place/${poi.placeId}`); // 해당 PLACE ID로 상세보기 페이지로 이동
-  };
+  // const handleMoreClick = () => {
+  //   router.push(`/place/${poi.placeId}`); // 해당 PLACE ID로 상세보기 페이지로 이동
+  // };
 
   return (
     <div style={{ maxWidth: '200px', fontFamily: 'Arial, sans-serif' }}>
@@ -88,7 +88,7 @@ const InfoBox = ({ poi, onMoreClick }: InfoBoxProps) => {
       <p style={{ margin: '8px 0', fontSize: '12px', color: '#777' }}>{address}</p> {/* 도로명 주소 표시 */}
 
       {/* 상세보기 버튼 */}
-      <button onClick={handleMoreClick} style={{ marginBottom: '8px', cursor: 'pointer' }}>
+      <button onClick={onMoreClick} style={{ marginBottom: '8px', cursor: 'pointer' }}>
         상세보기
       </button>
 
