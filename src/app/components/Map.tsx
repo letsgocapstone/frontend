@@ -170,27 +170,44 @@ export default function CustomeMap() {
         const handleMoreClick = (placeId: number) => {
             router.push(`/place/${placeId}`);
         };
+        // const handleMarkerClick = (poi: Poi) => {
+        //     if (map && infoWindowRef.current) {
+        //         console.log("current: ",poi.placeId);
+        //         const container = document.createElement('div');
+        //         createRoot(container).render(<InfoBox poi={poi} onMoreClick={() => handleMoreClick(poi.placeId)} />);
+        //         infoWindowRef.current.setContent(container);
+        //         infoWindowRef.current.setPosition(poi.location);
+        //         infoWindowRef.current.open(map);
+        //
+        //     } else {
+        //         // Create new InfoWindow if it does not exist
+        //         console.log(poi.placeId);
+        //         infoWindowRef.current = new google.maps.InfoWindow();
+        //         const container = document.createElement('div');
+        //         createRoot(container).render(<InfoBox poi={poi} onMoreClick={() => handleMoreClick(poi.placeId)} />);
+        //         infoWindowRef.current.setContent(container);
+        //         infoWindowRef.current.setPosition(poi.location);
+        //         infoWindowRef.current.open(map);
+        //
+        //     }
+        // };
         const handleMarkerClick = (poi: Poi) => {
-            if (map && infoWindowRef.current) {
-                console.log("current: ",poi.placeId);
-                const container = document.createElement('div');
-                createRoot(container).render(<InfoBox poi={poi} onMoreClick={() => handleMoreClick(poi.placeId)} />);
-                infoWindowRef.current.setContent(container);
-                infoWindowRef.current.setPosition(poi.location);
-                infoWindowRef.current.open(map);
+            if (!map) return;
 
-            } else {
-                // Create new InfoWindow if it does not exist
-                console.log(poi.placeId);
+            if (!infoWindowRef.current) {
                 infoWindowRef.current = new google.maps.InfoWindow();
-                const container = document.createElement('div');
-                createRoot(container).render(<InfoBox poi={poi} onMoreClick={() => handleMoreClick(poi.placeId)} />);
-                infoWindowRef.current.setContent(container);
-                infoWindowRef.current.setPosition(poi.location);
-                infoWindowRef.current.open(map);
-
             }
+
+            const container = document.createElement('div');
+            createRoot(container).render(
+                <InfoBox poi={poi} onMoreClick={() => handleMoreClick(poi.placeId)} />
+            );
+
+            infoWindowRef.current.setContent(container);
+            infoWindowRef.current.setPosition(poi.location);
+            infoWindowRef.current.open(map);
         };
+
 
 
         return (
@@ -234,7 +251,7 @@ export default function CustomeMap() {
 
         if (lastPosition) {
             const distance = distanceInKm(lastPosition.lat, lastPosition.lng, newCenter.lat, newCenter.lng);
-            if (distance > 30) {
+            if (distance > 20) {
                 setPoint([]);
                 try {
                     const places:resDto = await loadPlace(newCenter.lat, newCenter.lng);
