@@ -1,11 +1,9 @@
-// src/app/components/ParentComponent.tsx
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation'; // useRouter를 사용하여 페이지 이동
 import InfoBox from './InfoBox'; // InfoBox 컴포넌트 import
-import { Poi } from './InfoBox'; // Poi 타입을 InfoBox에서 import
 
 const ParentComponent = () => {
-  const [poi, setPoi] = useState<Poi | null>(null); // Poi | null로 타입을 설정하여 null을 허용
+  const [poi, setPoi] = useState<any | null>(null); // 데이터 타입을 any로 설정
   const router = useRouter(); // 페이지 이동을 위한 useRouter 훅
 
   // API에서 실제 데이터 받아오기 (예시로 fetch 사용)
@@ -17,7 +15,7 @@ const ParentComponent = () => {
     };
     
     fetchPlaceData();
-  }, []);
+  }, []); // 컴포넌트가 마운트 될 때 한번만 호출
 
   // 페이지 이동을 처리하는 함수
   const handleMoreClick = (placeId: number) => {
