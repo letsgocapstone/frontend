@@ -7,24 +7,25 @@ import { FaHeart, FaBookmark } from 'react-icons/fa';
 
 // 장소 상세 정보 타입 정의
 type PlaceDetails = {
-  id: string;
-  name: string;
-  description: string;
-  imageUrl: string;
+  id: number;
+  title: string;
+  content: string;
+  placeImageURL: string;
   latitude: number;
   longtitude: number;
   rating: number;
   tags: string[]; //
-  comments: [];
+  //comments: [];
+  placeId: number;
   userId: string;
   createdAt: string;
 };
 
-type Comment = {
-  userId: string; // 댓글 작성자의 ID
-  profileImage: string; // 댓글 작성자의 프로필 이미지 URL
-  comment: string; // 댓글 내용
-};
+// type Comment = {
+//   userId: string; // 댓글 작성자의 ID
+//   profileImage: string; // 댓글 작성자의 프로필 이미지 URL
+//   comment: string; // 댓글 내용
+// };
 
 const GOOGLE_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAP_API;
 
@@ -94,31 +95,54 @@ export default function PlaceDetailPage() {
     setBookmarked(!bookmarked);
   };
 
-  // 댓글 추가
-  const handleAddComment = () => {
+  //좋아요 토글
+  const handleLikeToggle = async () => {
     const token = localStorage.getItem('token');
     if (!token) {
-      alert('로그인 후 댓글 작성이 가능합니다.');
+      alert('로그인 후 좋아요를 눌러주세요.');
       return;
     }
 
-    if (!newComment.trim()) return;
-
-    fetch(`/api/places/${placeId}/comments`, {
-      method: 'POST',
+    const response = await fetch(`/api/places/${placeId}/like`, {
+      method: liked ? 'DELETE' : 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ comment: newComment }),
-    }).then(() => {
-      setCommentList((prev) => [
-        ...prev,
-        { userId: 'user123', profileImage: '/path/to/profile/image.jpg', comment: newComment },
-      ]);
-      setNewComment('');
     });
+
+    if (response.ok) {
+      setLiked(!liked); // UI 상태 업데이트
+    } else {
+      alert('좋아요 처리에 실패했습니다.');
+    }
   };
+
+  // 댓글 추가
+  // const handleAddComment = () => {
+  //   const token = localStorage.getItem('token');
+  //   if (!token) {
+  //     alert('로그인 후 댓글 작성이 가능합니다.');
+  //     return;
+  //   }
+
+  //   if (!newComment.trim()) return;
+
+  //   fetch(`/api/places/${placeId}/comments`, {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //     body: JSON.stringify({ comment: newComment }),
+  //   }).then(() => {
+  //     setCommentList((prev) => [
+  //       ...prev,
+  //       { userId: 'user123', profileImage: '/path/to/profile/image.jpg', comment: newComment },
+  //     ]);
+  //     setNewComment('');
+  //   });
+  // };
 
   const handleGoBack = () => {
     history.back();
@@ -136,7 +160,7 @@ export default function PlaceDetailPage() {
 
       <div className="bg-white rounded-xl shadow-md overflow-hidden border">
         <div className="p-4 border-b">
-          <h3 className="text-xl font-semibold"> {place.name}</h3>
+          <h3 className="text-xl font-semibold"> {place.title}</h3>
           <div className="text-gray-500 text-sm">
             등록자: {place.userId} | 등록일: {new Date(place.createdAt).toLocaleDateString()}
           </div>
@@ -144,8 +168,8 @@ export default function PlaceDetailPage() {
 
         <div className="w-full h-60 relative">
           <Image
-            src={place.imageUrl}
-            alt={place.name}
+            src={place.placeImageURL}
+            alt={place.title}
             layout="fill"
             objectFit="cover"
             className="object-cover"
@@ -160,7 +184,7 @@ export default function PlaceDetailPage() {
         )}
 
         <div className="p-4 border-b space-y-2">
-          <p className="text-gray-700">{place.description}</p>
+          <p className="text-gray-700">{place.content}</p>
           <div className="text-yellow-500">⭐ {place.rating}/5</div>
 
           //태그표시
@@ -185,11 +209,10 @@ export default function PlaceDetailPage() {
           </button>
         </div>
 
-        <div className="p-4 space-y-2 border-b">
+        {/* <div className="p-4 space-y-2 border-b">
           <h4 className="font-semibold">후기</h4>
           {commentList.slice(0, visibleComments).map((comment, index) => (
-  <div key={index} className="flex items-start space-x-3 mb-4">
-    {/* 프로필 이미지 */}
+          <div key={index} className="flex items-start space-x-3 mb-4">
     <div className="w-12 h-12 rounded-full overflow-hidden">
       <Image
         src={comment.profileImage} // 사용자 프로필 이미지 URL
@@ -199,7 +222,6 @@ export default function PlaceDetailPage() {
         className="object-cover"
       />
     </div>
-    {/* 사용자 ID와 댓글 */}
     <div className="flex-1">
       <div className="text-gray-700 text-sm font-semibold">{comment.userId}</div>
       <p className="text-gray-600 text-sm">{comment.comment}</p>
@@ -231,7 +253,7 @@ export default function PlaceDetailPage() {
           >
             등록
           </button>
-        </div>
+        </div> */}
       </div>
     </div>
   );
