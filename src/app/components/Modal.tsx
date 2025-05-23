@@ -153,14 +153,22 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (placeTitle && placeDescription && imageFile && latitude && longitude) {
-      onSubmit(placeTitle, longitude, latitude, placeDescription, rating, imageFile, selectedTags);
-      alert("장소 등록 완료");
-      onClose();
-    } else {
-      alert("모든 필드를 입력해주세요.");
+
+    // 필드 값들이 모두 채워져 있는지 체크 (빈 값이 있으면 등록 불가)
+    if (!placeTitle || !placeDescription || !imageFile || !latitude || !longitude || selectedTags.length === 0) {
+        alert("모든 필드를 입력해주세요.");  // 필수 필드가 비어 있을 경우 경고
+        return;  // 경고 후 등록 진행하지 않음
     }
-  };
+
+    // 모든 필드가 채워졌으면 onSubmit 호출
+    onSubmit(placeTitle, longitude, latitude, placeDescription, rating, imageFile, selectedTags);
+
+    // 등록 완료 후 메시지와 모달 닫기
+    alert("장소 등록 완료");
+    onClose();  // 모달 닫기
+};
+
+
 
   if (!isOpen) return null;
 
@@ -168,7 +176,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
     <div className="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl p-6 shadow-2xl max-h-[90%] overflow-y-auto">
       <h2 className="text-xl font-semibold mb-4">📍 장소 등록</h2>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+    
         {/* 장소 입력 */}
         <input
           type="text"
@@ -304,14 +312,18 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
 
         {/* 제출 및 닫기 버튼 */}
         <div className="flex justify-between mt-4">
-          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-            등록
-          </button>
+        <button
+        type="button"  // 'submit'에서 'button'으로 변경
+        onClick={handleSubmit}  // 클릭 시 handleSubmit 호출
+        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+    >
+        등록
+    </button>
           <button type="button" onClick={onClose} className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-600 flex items-center gap-1">
             <FaTimes /> 닫기
           </button>
         </div>
-      </form>
+     
     </div>
   );
 };
