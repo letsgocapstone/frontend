@@ -56,6 +56,8 @@ const distanceInKm = (lat1: number, lon1: number, lat2: number, lon2: number) =>
 
 
 export async function loadPlace(lat: number, lng: number) {
+    // const url = `/api/load_location?lat=${lat}&lng=${lng}`;
+    // console.log("👉 요청 URL:", url); // 요청 URL 확인용 로그
 
     const res = await fetch(`/api/load_location?lat=${lat}&lng=${lng}`, {
     // const res = await fetch(`/api/load_location?lat=3&lng=49.22`, {

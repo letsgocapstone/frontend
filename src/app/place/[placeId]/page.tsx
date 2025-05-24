@@ -18,7 +18,8 @@ type PlaceDetails = {
   //comments: [];
   placeId: number;
   userId: string;
-  createdAt: string;
+  createTime: string;
+  username: string;
 };
 
 // type Comment = {
@@ -28,6 +29,7 @@ type PlaceDetails = {
 // };
 
 const GOOGLE_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAP_API;
+const token = localStorage.getItem('token');
 
 export default function PlaceDetailPage() {
   const { placeId } = useParams(); // URL에서 placeId 읽기
@@ -46,8 +48,19 @@ export default function PlaceDetailPage() {
     const fetchPlace = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/places/${placeId}`);
+
+        const response = await fetch(`/api/api/post/place_id=${placeId}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`, // ❌ 쿠키 기반 인증이면 이 줄 생략해도 됨
+          },
+          // credentials: 'include', // ✅ 쿠키 전송 허용
+        });
+
+
         const data = await response.json();
+        console.log(data);
         setPlace(data);
         // 좌표를 주소로 변환
         const res = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${data.latitude},${data.longitude}&key=${GOOGLE_API_KEY}`);
@@ -162,7 +175,7 @@ export default function PlaceDetailPage() {
         <div className="p-4 border-b">
           <h3 className="text-xl font-semibold"> {place.title}</h3>
           <div className="text-gray-500 text-sm">
-            등록자: {place.userId} | 등록일: {new Date(place.createdAt).toLocaleDateString()}
+            작성자: {place.username} | 등록일: {new Date(place.createTime).toLocaleDateString()}
           </div>
         </div>
 
@@ -188,16 +201,16 @@ export default function PlaceDetailPage() {
           <div className="text-yellow-500">⭐ {place.rating}/5</div>
 
           //태그표시
-          <div className="flex gap-2 flex-wrap mt-2">
-            {place.tags.map((tag) => (
-              <span
-                key={tag}
-                className="bg-gray-100 text-gray-800 px-3 py-1 rounded-lg text-sm"
-              >
-                #{tag}
-              </span>
-            ))}
-          </div>
+          {/*<div className="flex gap-2 flex-wrap mt-2">*/}
+          {/*  {place.tags.map((tag) => (*/}
+          {/*    <span*/}
+          {/*      key={tag}*/}
+          {/*      className="bg-gray-100 text-gray-800 px-3 py-1 rounded-lg text-sm"*/}
+          {/*    >*/}
+          {/*      #{tag}*/}
+          {/*    </span>*/}
+          {/*  ))}*/}
+          {/*</div>*/}
         </div>
 
         <div className="p-4 flex items-center gap-4 border-b">
