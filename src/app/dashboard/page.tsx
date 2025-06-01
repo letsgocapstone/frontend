@@ -10,6 +10,50 @@ import Image from "next/image";
 export default function Dashboard() {
     const [token, setToken] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [reloadMap, setReloadMap] = useState(false);
+
+    const [input, setInput] = useState("");
+    const [suggestions, setSuggestions] = useState<string[]>([]);
+
+    useEffect(() => {
+        if (input.length === 0) {
+            setSuggestions([]);
+            return;
+        }
+
+        const timeoutId = setTimeout(() => {
+            fetch(`/api/tags/autocomplete?prefix=${encodeURIComponent(input)}`)
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error(`HTTP error! status: ${res.status}`);
+                    }
+                    return res.text();  // 우선 텍스트로 받아서 빈 응답 체크
+                })
+                .then(text => {
+                    if (!text) {
+                        setSuggestions([]);
+                        return;
+                    }
+                    try {
+                        const data = JSON.parse(text);
+                        setSuggestions(data);
+                    } catch (e) {
+                        console.error('JSON 파싱 에러:', e);
+                        setSuggestions([]);
+                    }
+                })
+                .catch(err => {
+                    console.error('Fetch 에러:', err);
+                    setSuggestions([]);
+                });
+        }, 300);
+
+        return () => clearTimeout(timeoutId);
+    }, [input]);
+
+
+
+
 
     useEffect(() => {
         const storedToken = localStorage.getItem("token");
@@ -40,7 +84,7 @@ export default function Dashboard() {
     const closeModal = () => setIsModalOpen(false);
 
     // 모달에서 장소 등록 처리
-    const handlePlaceSubmit = async (placeTitle: string, longitude:number, latitude:number, placeDescription: string, rating:number,imageFile: File) => {
+    const handlePlaceSubmit = async (placeTitle: string, longitude:number, latitude:number, placeDescription: string, rating:number,imageFile: File, tags: string[]) => {
         if (!token) {
             alert("인증된 사용자만 장소를 등록할 수 있습니다.");
             return;
@@ -53,6 +97,9 @@ export default function Dashboard() {
         formData.append("lat", latitude.toString());
         formData.append("rating", rating.toString());
         formData.append("placeImageURL", imageFile);
+        tags.forEach(tag => formData.append("tags", tag));
+
+        // formData.append("tags", JSON.stringify(tags));
 
 
         try {
@@ -65,6 +112,7 @@ export default function Dashboard() {
 
             if (response.status === 200) {
                 alert("장소가 성공적으로 등록되었습니다.");
+                setReloadMap(prev => !prev);
                 closeModal(); // 모달 닫기
             }
         } catch (error) {
@@ -79,23 +127,43 @@ export default function Dashboard() {
                 {/* 검색창 */}
                 <div className="absolute top-12 left-1/2 transform -translate-x-1/2 z-20 flex space-x-3 items-center">
                     {/* 검색창 박스 */}
-                    <div className="flex items-center bg-white px-3 h-12 rounded-xl shadow-md w-72">
-                        {/* 돋보기 아이콘 */}
-                        <div className="relative w-5 h-5 mr-2">
-                            <Image
-                                src="/map/search.svg"
-                                alt="검색"
-                                layout="fill"
-                                objectFit="contain"
+                    <div className="flex flex-col items-center bg-white px-3 h-auto rounded-xl shadow-md w-72 relative">
+                        {/* 검색창 */}
+                        <div className="flex items-center w-full h-12">
+                            <div className="relative w-5 h-5 mr-2">
+                                <Image
+                                    src="/map/search.svg"
+                                    alt="검색"
+                                    layout="fill"
+                                    objectFit="contain"
+                                />
+                            </div>
+                            <input
+                                type="text"
+                                value={input}
+                                className="w-full p-1 border-none focus:outline-none"
+                                onChange={(e) => setInput(e.target.value)}
+                                placeholder="태그 검색"
                             />
                         </div>
-                        {/* 입력창 */}
-                        <input
-                            type="text"
-                            placeholder=""
-                            className="w-full p-1 border-none focus:outline-none"
-                        />
+
+                        {/* 추천 태그 리스트 */}
+                        {suggestions.length > 0 && (
+                            <ul className="absolute top-full left-0 right-0 bg-white border border-gray-200 mt-1 rounded-md shadow-lg z-30 max-h-48 overflow-y-auto">
+                                {suggestions.map((tag) => (
+                                    <li
+                                        key={tag}
+                                        onClick={() => {setInput(tag);setReloadMap(prev => !prev);}}
+                                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                    >
+                                        {tag}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
                     </div>
+
+
 
                     {/* 별도 버튼 */}
                     <button
@@ -116,7 +184,7 @@ export default function Dashboard() {
 
 
                 {/* 지도 컴포넌트 */}
-                <Map />
+                <Map reloadTrigger={reloadMap} filterTag={input}/>
 
                 {/* 모달 열기 버튼 */}
                 {/*<button*/}

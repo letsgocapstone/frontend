@@ -26,6 +26,8 @@ interface resPoi {
     placeImageURL: string;
     userid: number;
     placeId: number;
+    tags: string[]; // ⬅️ 추가
+
 }
 
 interface Poi {
@@ -33,12 +35,14 @@ interface Poi {
     location: google.maps.LatLngLiteral;
     title: string;
     placeId: number;
+    tags: string[]; // ⬅️ 추가
 }
 interface PlaceDto {
     latitude: number;
     longitude: number;
     placeTitle: string;
     placeId: number;
+    tags: string[];
     // other fields...
 };
 
@@ -79,7 +83,7 @@ export async function loadPlace(lat: number, lng: number) {
 
 
 
-export default function CustomeMap() {
+export default function CustomeMap({ reloadTrigger,filterTag }: { reloadTrigger: boolean; filterTag: string; }) {
     const router = useRouter();
     const [userCenter, setUserCenter] = useState<{ lat: number, lng: number } | null>(null);
     const [lastPosition, setLastPosition] = useState<{ lat: number, lng: number } | null>(null);
@@ -104,16 +108,17 @@ export default function CustomeMap() {
                         setLastPosition(pos); // 최초 위치 저장
                         try {
                             const places: resDto = await loadPlace(pos.lat, pos.lng);
-                            console.log(places.poi);
+                            // console.log(places.poi);
                             const placepoi: Poi[] = (places.poi || []).map((p: PlaceDto) => ({
                                 key: Math.random().toString(36).substring(2, 10),
                                 location: { lat: p.latitude, lng: p.longitude },
                                 title: p.placeTitle,
                                 placeId: p.placeId,
+                                tags:p.tags ||[]
                             }));
-                            console.log(placepoi);
+                            // console.log(placepoi);
                             setPoint(placepoi);
-                            console.log('근처 장소 데이터:', places.poi);
+                            // console.log('근처 장소 데이터:', places.poi);
                             setLastPosition(pos); // 마지막 위치 업데이트
                         } catch (error) {
                             console.error('장소 로딩 실패:', error);
@@ -126,11 +131,11 @@ export default function CustomeMap() {
             };
             getCurrentLocation();
         }
-    }, []);
+    }, [reloadTrigger]);
 
 
 
-    const PoiMarkers = (props: { pois: Poi[] }) => {
+    const PoiMarkers = (props: { pois: Poi[]; filterTag: string }) => {
         const map = useMap();
         const [markers, setMarkers] = useState<{[key: string]: Marker}>({});
         const clusterer = useRef<MarkerClusterer | null>(null);
@@ -150,9 +155,18 @@ export default function CustomeMap() {
 
         // Update markers, if the markers array has changed
         useEffect(() => {
-            clusterer.current?.clearMarkers();
-            clusterer.current?.addMarkers(Object.values(markers));
-        }, [markers]);
+            if (!clusterer.current) return;
+
+            // 클러스터 초기화
+            clusterer.current.clearMarkers();
+
+            // filteredPois 기준으로 마커만 추가
+            const filteredMarkers = filteredPois
+                .map(poi => markers[poi.key])
+                .filter(marker => marker !== undefined);
+
+            clusterer.current.addMarkers(filteredMarkers);
+        }, [props.filterTag, markers]);
 
 
         const setMarkerRef = (marker: Marker | null, key: string) => {
@@ -210,6 +224,15 @@ export default function CustomeMap() {
             infoWindowRef.current.open(map);
         };
 
+        const normalizedFilterTag = props.filterTag.trim().toLowerCase();
+        const filteredPois = props.pois.filter(poi => {
+            if (normalizedFilterTag === "") return true;
+            const match = poi.tags.some(tag => tag.toLowerCase().includes(normalizedFilterTag));
+            console.log(`poi: ${poi.title}, tags: ${poi.tags.join(", ")}, match: ${match}`);
+            return match;
+        });
+
+
 
 
         return (
@@ -220,31 +243,30 @@ export default function CustomeMap() {
                 >
                     <Pin background={'#000'} glyphColor={'#fff'} borderColor={'#fff'} />
                 </AdvancedMarker>
-                {props.pois.map( (poi: Poi) => (
-                    <AdvancedMarker
-                        key={poi.key}
-                        position={poi.location}
-                        // gmpClickable={true}
-                        ref={marker => setMarkerRef(marker, poi.key)}
-                        // onClick={() => {
-                        //     console.log(poi)
-                        //     if (map && infoWindowRef.current) {
-                        //         const container = document.createElement('div');
-                        //         createRoot(container).render(<InfoBox poi={poi}  onMoreClick={() => handleMoreClick(poi.placeId)} />);
-                        //         infoWindowRef.current.setContent(container);
-                        //         infoWindowRef.current.setPosition(poi.location);
-                        //         infoWindowRef.current.open(map);
-                        //     }
-                        // }}
-                        onClick={() => handleMarkerClick(poi)}
-                    >
-                        {/*<Pin />*/}
-                    </AdvancedMarker>
 
-                ))}
+                {filteredPois.map((poi: Poi) => {
+                    const isMatched = poi.tags.some(tag =>
+                        tag.toLowerCase().includes(props.filterTag.trim().toLowerCase())
+                    );
 
+                    return (
+                        <AdvancedMarker
+                            key={poi.key}
+                            position={poi.location}
+                            ref={marker => setMarkerRef(marker, poi.key)}
+                            onClick={() => handleMarkerClick(poi)}
+                        >
+                            <Pin
+                                background={isMatched ? '#FF5733' : '#1C4966'} // 일치 시 주황, 기본은 네이비
+                                glyphColor="#fff"
+                                borderColor="#fff"
+                            />
+                        </AdvancedMarker>
+                    );
+                })}
             </>
         );
+
     };
 
     const handleCameraChange = async (ev: MapCameraChangedEvent) => {
@@ -257,17 +279,18 @@ export default function CustomeMap() {
                 setPoint([]);
                 try {
                     const places:resDto = await loadPlace(newCenter.lat, newCenter.lng);
-                    console.log(places.poi);
+                    // console.log(places.poi);
                     const placepoi:Poi[] = places.poi.map((p:PlaceDto)=> ({
                         key:Math.random().toString(36).substring(2, 10),
                         location:{lat: p.latitude, lng: p.longitude},
                         title:p.placeTitle,
                         placeId:p.placeId,
+                        tags:p.tags ||[]
                     }));
-                    console.log(placepoi);
+                    // console.log(placepoi);
                     setPoint(placepoi);
 
-                    console.log('근처 장소 데이터:', places);
+                    // console.log('근처 장소 데이터:', places);
                     // setPoint(places);
                     setLastPosition({ lat: newCenter.lat, lng: newCenter.lng }); // 마지막 위치 업데이트
                 } catch (error) {
@@ -302,7 +325,7 @@ export default function CustomeMap() {
                     {/*        <Pin background={'#FBBC04'} glyphColor={'#000'} borderColor={'#000'} />*/}
                     {/*    </AdvancedMarker>*/}
                     {/*)}*/}
-                    {point && <PoiMarkers pois={point} />}
+                    {point && <PoiMarkers pois={point} filterTag={filterTag} />}
                 </Map>)}
             </APIProvider>
         </div>
