@@ -166,7 +166,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
     // 등록 완료 후 메시지와 모달 닫기
     alert("장소 등록 완료");
     onClose();  // 모달 닫기
-};
+  };
 
 
 
@@ -174,7 +174,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl p-6 shadow-2xl max-h-[90%] overflow-y-auto">
-      <h2 className="text-xl font-semibold mb-4">📍 장소 등록</h2>
+      <h2 className="text-xl font-semibold mb-4"> 장소 등록</h2>
 
     
         {/* 장소 입력 */}
@@ -182,7 +182,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
           type="text"
           value={placeTitle}
           onChange={(e) => setPlaceTitle(e.target.value)}
-          className="w-full border px-3 py-2 rounded"
+          className="w-full border px-3 py-2 rounded mb-4"
           placeholder="장소 제목 입력"
         />
 
@@ -212,7 +212,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
           </APIProvider>
         )}
 
-        <button type="button" onClick={handleConvertLatLngToAddress} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full">
+        <button type="button" onClick={handleConvertLatLngToAddress} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-[#0583F2] w-full mt-4 mb-4">
           이 위치로 등록 (주소 확인)
         </button>
 
@@ -244,7 +244,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
           )}
           <div className="flex flex-wrap gap-2 mt-3">
             {selectedTags.map((tag) => (
-              <span key={tag} className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm flex items-center gap-2">
+              <span key={tag} className="bg-blue-100 text-blue-700 px-3 py-1 rounded-sm text-sm flex items-center gap-2 mb-4">
                 {tag}
                 <button onClick={() => removeTag(tag)} className="text-blue-500 hover:text-red-500">×</button>
               </span>
@@ -260,7 +260,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
         <textarea
           value={placeDescription}
           onChange={(e) => setPlaceDescription(e.target.value)}
-          className="w-full border px-3 py-2 rounded"
+          className="w-full border px-3 py-2 rounded mt-4 mb-4"
           rows={3}
           placeholder="장소 설명 입력"
         />
@@ -278,7 +278,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
               />
             )}
 
-            <div className="flex gap-2">
+            <div className="flex gap-2 mb-4">
               <button
                 type="button"
                 onClick={openCamera}
@@ -313,13 +313,13 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
         {/* 제출 및 닫기 버튼 */}
         <div className="flex justify-between mt-4">
         <button
-        type="button"  // 'submit'에서 'button'으로 변경
-        onClick={handleSubmit}  // 클릭 시 handleSubmit 호출
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-    >
-        등록
-    </button>
-          <button type="button" onClick={onClose} className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-600 flex items-center gap-1">
+          type="button"  // 'submit'에서 'button'으로 변경
+          onClick={handleSubmit}  // 클릭 시 handleSubmit 호출
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-[#0583F2] cursor-pointer"
+          >
+          등록
+        </button>
+          <button type="button" onClick={onClose} className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-400 flex items-center gap-1 cursor-pointer">
             <FaTimes /> 닫기
           </button>
         </div>
