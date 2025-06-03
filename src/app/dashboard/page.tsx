@@ -168,7 +168,7 @@ export default function Dashboard() {
                     {/* 별도 버튼 */}
                     <button
                         onClick={openModal}
-                        className="w-12 h-12 bg-[#1C4966] text-white rounded-xl hover:bg-blue-600 focus:outline-none flex justify-center items-center shadow-md"
+                        className="w-12 h-12 bg-[#056CF2] text-white rounded-xl focus:outline-none flex justify-center items-center shadow-md cursor-pointer hover:bg-[#0583F2]"
                     >
                         <div className="relative w-5 h-5">
                             <Image
