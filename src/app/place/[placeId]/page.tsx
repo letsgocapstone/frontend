@@ -71,6 +71,7 @@ export default function PlaceDetailPage() {
           setAddress('주소를 찾을 수 없습니다.');
         }
         setCommentList(data.comments);
+        console.log(commentList)
       } catch (error) {
         console.error('장소 불러오기 실패', error);
       } finally {
@@ -188,7 +189,7 @@ export default function PlaceDetailPage() {
         />
       </div>
 
-      // 주소 표시 
+      {/*// 주소 표시 */}
       {address && (
         <div className="p-5 text-gray-500 text-sm border-b border-gray-100">
           {address}
@@ -199,7 +200,7 @@ export default function PlaceDetailPage() {
         <p className="text-gray-800">{place.content}</p>
         <div className="text-yellow-500 font-semibold">⭐ {place.rating}/5</div>
 
-        //태그표시
+        {/*//태그표시*/}
         <div className="flex gap-2 flex-wrap mt-2">
           {place.tags.map((tag) => (
             <span
