@@ -37,10 +37,10 @@ export default function PlaceDetailPage() {
   const [loading, setLoading] = useState(true);
   const [liked, setLiked] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
-  const [newComment, setNewComment] = useState('');
+  //const [newComment, setNewComment] = useState('');
   const [commentList, setCommentList] = useState<Comment[]>([]); // 댓글 배열 타입 수정
   const [address, setAddress] = useState('');
-  const [visibleComments, setVisibleComments] = useState(3); //표시할 댓글 수수
+  //const [visibleComments, setVisibleComments] = useState(3); //표시할 댓글 수수
   // 장소 정보 불러오기 
   useEffect(() => {
     if (!placeId || typeof placeId !== 'string') return;
@@ -109,27 +109,27 @@ export default function PlaceDetailPage() {
   };
 
   //좋아요 토글
-  const handleLikeToggle = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      alert('로그인 후 좋아요를 눌러주세요.');
-      return;
-    }
+  // const handleLikeToggle = async () => {
+  //   const token = localStorage.getItem('token');
+  //   if (!token) {
+  //     alert('로그인 후 좋아요를 눌러주세요.');
+  //     return;
+  //   }
 
-    const response = await fetch(`/api/places/${placeId}/like`, {
-      method: liked ? 'DELETE' : 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  //   const response = await fetch(`/api/places/${placeId}/like`, {
+  //     method: liked ? 'DELETE' : 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //   });
 
-    if (response.ok) {
-      setLiked(!liked); // UI 상태 업데이트
-    } else {
-      alert('좋아요 처리에 실패했습니다.');
-    }
-  };
+  //   if (response.ok) {
+  //     setLiked(!liked); // UI 상태 업데이트
+  //   } else {
+  //     alert('좋아요 처리에 실패했습니다.');
+  //   }
+  // };
   // 댓글 추가
   // const handleAddComment = () => {
   //   const token = localStorage.getItem('token');
