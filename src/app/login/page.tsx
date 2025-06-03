@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from "next/image";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -10,7 +11,7 @@ export default function LoginPage() {
     const [password, setPassword] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
     const [successMsg, setSuccessMsg] = useState('');
-    const [jwtToken, setJwtToken] = useState('');
+    // const [jwtToken, setJwtToken] = useState('');
 
     const handleRegister = (e: React.MouseEvent) => {
       e.preventDefault(); // 클릭 이벤트가 submit을 트리거하지 않게 막음
@@ -38,7 +39,7 @@ export default function LoginPage() {
 
 
             // const token = data.token; // 서버에서 token을 JSON 응답으로 받는다고 가정
-            setJwtToken(token); // 토큰 상태 업데이트
+            // setJwtToken(token); // 토큰 상태 업데이트
             localStorage.setItem("token", token);
 
             // 콘솔에 JWT 토큰 출력
@@ -58,7 +59,14 @@ export default function LoginPage() {
           
           {/* 로고 삽입 */}
           <div className="mb-6 sm:mb-8 h-30px flex items-center justify-center mt-15"> {/* mt-4로 위쪽 여백 살짝 추가 */}
-            <img src="/logo.png" alt="로고" className="h-[25vh]" />
+            {/*<img src="/logo.png" alt="로고" className="h-[25vh]" />*/}
+              <Image
+                  src="/logo.png"
+                  alt="로고"
+                  width={200}
+                  height={100}
+                  className="h-[25vh] object-contain"
+              />
           </div>
     
           <form onSubmit={handleLogin}>

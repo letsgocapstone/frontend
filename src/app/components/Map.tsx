@@ -26,6 +26,8 @@ interface resPoi {
     placeImageURL: string;
     userid: number;
     placeId: number;
+    // placeImageURL: string;
+
     tags: string[]; // ⬅️ 추가
 
 }
@@ -36,6 +38,7 @@ interface Poi {
     title: string;
     placeId: number;
     tags: string[]; // ⬅️ 추가
+    placeImageURL: string;
 }
 interface PlaceDto {
     latitude: number;
@@ -43,6 +46,8 @@ interface PlaceDto {
     placeTitle: string;
     placeId: number;
     tags: string[];
+    placeImageURL: string;
+
     // other fields...
 };
 
@@ -108,12 +113,13 @@ export default function CustomeMap({ reloadTrigger,filterTag }: { reloadTrigger:
                         setLastPosition(pos); // 최초 위치 저장
                         try {
                             const places: resDto = await loadPlace(pos.lat, pos.lng);
-                            // console.log(places.poi);
+                            console.log(places.poi);
                             const placepoi: Poi[] = (places.poi || []).map((p: PlaceDto) => ({
                                 key: Math.random().toString(36).substring(2, 10),
                                 location: { lat: p.latitude, lng: p.longitude },
                                 title: p.placeTitle,
                                 placeId: p.placeId,
+                                placeImageURL:p.placeImageURL,
                                 tags:p.tags ||[]
                             }));
                             // console.log(placepoi);
@@ -271,7 +277,7 @@ export default function CustomeMap({ reloadTrigger,filterTag }: { reloadTrigger:
 
     const handleCameraChange = async (ev: MapCameraChangedEvent) => {
         const newCenter = ev.detail.center;
-        console.log('📍 지도 중심 변경됨:', newCenter.lat, newCenter.lng);
+        // console.log('📍 지도 중심 변경됨:', newCenter.lat, newCenter.lng);
 
         if (lastPosition) {
             const distance = distanceInKm(lastPosition.lat, lastPosition.lng, newCenter.lat, newCenter.lng);
@@ -285,6 +291,7 @@ export default function CustomeMap({ reloadTrigger,filterTag }: { reloadTrigger:
                         location:{lat: p.latitude, lng: p.longitude},
                         title:p.placeTitle,
                         placeId:p.placeId,
+                        placeImageURL:p.placeImageURL,
                         tags:p.tags ||[]
                     }));
                     // console.log(placepoi);

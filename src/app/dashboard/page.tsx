@@ -58,7 +58,7 @@ export default function Dashboard() {
     useEffect(() => {
         const storedToken = localStorage.getItem("token");
         setToken(storedToken);
-        console.log("JWT Token:", storedToken);
+        // console.log("JWT Token:", storedToken);
 
         if (storedToken) {
             fetch(`/api/`, {

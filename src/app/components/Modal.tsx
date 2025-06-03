@@ -27,7 +27,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit }) => {
   // 태그 관련
   const [tagInput, setTagInput] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [allTags, setAllTags] = useState<string[]>(['카페', '주차장', '야경', '뷰맛집']);
+  const [allTags] = useState<string[]>(['카페', '주차장', '야경', '뷰맛집']);
 
   const filteredTags = allTags.filter(tag => tag.includes(tagInput) && !selectedTags.includes(tag));
 

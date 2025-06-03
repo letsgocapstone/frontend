@@ -3,12 +3,11 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 
 export interface Poi {
   title: string;
   description?: string;
-  imageUrl?: string;
+  placeImageURL: string;
   placeId: number;
   latitude?: number;
   longitude?: number;
@@ -27,7 +26,8 @@ const InfoBox = ({ poi, onMoreClick }: InfoBoxProps) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 상태 체크
 
   const description = poi.description || 'example';
-  const imageUrl = poi.imageUrl || '/images.png'; // 기본 이미지 경로
+  const imageUrl = poi.placeImageURL || '/images.png' // 기본 이미지
+    // console.log(poi)
 
   // 위도와 경도를 도로명 주소로 변환하는 함수
   useEffect(() => {

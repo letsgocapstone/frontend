@@ -37,10 +37,10 @@ export default function PlaceDetailPage() {
   const [loading, setLoading] = useState(true);
   const [liked, setLiked] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
-  const [newComment, setNewComment] = useState('');
+  // const [newComment, setNewComment] = useState('');
   const [commentList, setCommentList] = useState<Comment[]>([]); // 댓글 배열 타입 수정
   const [address, setAddress] = useState('');
-  const [visibleComments, setVisibleComments] = useState(3); //표시할 댓글 수수
+  // const [visibleComments, setVisibleComments] = useState(3); //표시할 댓글 수수
   // 장소 정보 불러오기 
   useEffect(() => {
     if (!placeId || typeof placeId !== 'string') return;
@@ -71,6 +71,7 @@ export default function PlaceDetailPage() {
           setAddress('주소를 찾을 수 없습니다.');
         }
         setCommentList(data.comments);
+        console.log(commentList);
       } catch (error) {
         console.error('장소 불러오기 실패', error);
       } finally {
@@ -108,28 +109,28 @@ export default function PlaceDetailPage() {
     setBookmarked(!bookmarked);
   };
 
-  //좋아요 토글
-  const handleLikeToggle = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      alert('로그인 후 좋아요를 눌러주세요.');
-      return;
-    }
-
-    const response = await fetch(`/api/places/${placeId}/like`, {
-      method: liked ? 'DELETE' : 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (response.ok) {
-      setLiked(!liked); // UI 상태 업데이트
-    } else {
-      alert('좋아요 처리에 실패했습니다.');
-    }
-  };
+  // //좋아요 토글
+  // const handleLikeToggle = async () => {
+  //   const token = localStorage.getItem('token');
+  //   if (!token) {
+  //     alert('로그인 후 좋아요를 눌러주세요.');
+  //     return;
+  //   }
+  //
+  //   const response = await fetch(`/api/places/${placeId}/like`, {
+  //     method: liked ? 'DELETE' : 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //   });
+  //
+  //   if (response.ok) {
+  //     setLiked(!liked); // UI 상태 업데이트
+  //   } else {
+  //     alert('좋아요 처리에 실패했습니다.');
+  //   }
+  // };
 
   // 댓글 추가
   // const handleAddComment = () => {
@@ -189,7 +190,6 @@ export default function PlaceDetailPage() {
           />
         </div>
 
-         // 주소 표시 
         {address && (
           <div className="p-4 text-gray-500 text-sm border-b">
             {address}
@@ -200,7 +200,6 @@ export default function PlaceDetailPage() {
           <p className="text-gray-700">{place.content}</p>
           <div className="text-yellow-500">⭐ {place.rating}/5</div>
 
-          //태그표시
           {/*<div className="flex gap-2 flex-wrap mt-2">*/}
           {/*  {place.tags.map((tag) => (*/}
           {/*    <span*/}

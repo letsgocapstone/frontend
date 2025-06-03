@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation'; // useRouter를 사용하여 페이
 import InfoBox from './InfoBox'; // InfoBox 컴포넌트 import
 
 const ParentComponent = () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [poi, setPoi] = useState<any | null>(null); // 데이터 타입을 any로 설정
   const router = useRouter(); // 페이지 이동을 위한 useRouter 훅
 
